@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Game from './components/Game.vue';
+import Game from './components/GameView.vue';
 
 export default {
 	name: 'App',
@@ -20,6 +20,7 @@ export default {
 	font-family: Avenir, Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	
 
 	width: 80vw;
 	height: 100vh;

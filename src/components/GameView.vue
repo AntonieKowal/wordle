@@ -1,7 +1,16 @@
 <template>
 	<div class='container'>
-		<h1 id='title'>UNORIGINLE</h1>
-		<hr style='width: 100%; margin: 12px 0;'>
+		<div v-show='showSettings' class="settings">
+			<div @click='showSettings = false'>X</div>
+		</div>
+		<div class="header">
+			<div @click='showSettings = !showSettings'>?</div>
+			<h1 id='title'>UNORIGINLE</h1>
+			<div @click='share()'>&</div>
+		</div>
+
+		<div class="divider"></div>
+		
 		<!-- start word row -->
 		<div 
 			class='word'
@@ -27,6 +36,8 @@
 		<div v-if='scene == "winner"' class='results'>
 			<h2>Winner!</h2>
 			<br>
+			<button @click='share'>Share</button>
+			<br>
 			<button @click='resetGame()'>Reset Game?</button>
 		</div>
 		<div v-if='scene == "loser"' class='results'>
@@ -50,6 +61,8 @@
 			:keyboardState='keyboardState'
 		/>
 		<!-- end keyboard -->
+
+
 	</div>
 </template>
 
@@ -61,7 +74,7 @@ import Keyboard from '@/components/Keyboard.vue'
 import wordbank from '../../word-bank.js'
 
 export default {
-	name: 'Game',
+	name: 'GameView',
 	components: {
 		Keyboard
 	},
@@ -114,7 +127,8 @@ export default {
 				'incorrect': [],
 				'close': [],
 				'correct': [],
-			}
+			},
+			showSettings: false
 		};
 	},
 	mounted() {
@@ -257,6 +271,31 @@ export default {
 		refreshBoard() {
 			this.generateEmptyBoard();
 			this.selectWord();
+		},
+		share() {
+			let tiles = {
+				white: '⬜',
+				orange: '🟨', // Even though the Emoji is yellow, we call the color orange elsewhere.
+				green: '🟩',
+				grey: '⬛'
+			}
+
+			let shareString = `Unoriginle ${this.currentWord}/${this.allowedGuesses}\n\n`;
+
+			for (let word of this.game) {
+				// If they only took 4 guesses to find the target word, we only want to emoji-ify those 4 rows. Stop generating rows if they already solved the word.
+				if (word[0].key == undefined) break;
+
+				for (let tile of word) {
+					shareString += tiles[tile.color];
+				}
+				shareString += "\n";
+			}
+
+			navigator.clipboard.writeText(shareString);
+
+			alert('Copied!')
+			console.log(this.game, shareString);
 		}
 	},
 };
@@ -335,6 +374,39 @@ export default {
 	align-items: center;
 
 	margin: 40px 0;
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	width: 100%;
+	
+	margin: 4px 0;
+
+	font-family: 'Clear Sans', 'Helvetica Neue', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+	letter-spacing: 0.2rem;
+}
+
+.divider {
+	height: 1px;
+	width: 100%;
+	background: black;
+	margin: 0 0 4px;
+}
+
+.settings {
+	position: fixed;
+	max-width: 540px;
+	width: 100%;
+	height: 100vh;
+	/* top: 10%; */
+
+	background: rgb(243, 243, 243);
+
 }
 
 </style>
